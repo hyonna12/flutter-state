@@ -15,34 +15,17 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int num = 1;
-  // 변수는 stateful한 위젯이 가지고 있어야함
-
-  void increase() {
-    setState(() {
-      // 값 변경하면서 build
-      num++;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    double size = MediaQuery.of(context).size.width;
-    double screenSize = size * 0.8;
     return Scaffold(
+      backgroundColor: Colors.green,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(child: AComponent(num)),
-          Expanded(child: BComponent(increase)),
+          Expanded(child: CComponent()),
           // rebuild 할 때 변하지 않는 값은 const(새롭게 그림그리지 않고 동일한 그림을 재사용) 붙여줌
         ],
       ),
@@ -50,7 +33,25 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// 컨슈머 (소비자) - 상태를 가지며 상태를 통해 그림을 그림
+class ABComponent extends StatelessWidget {
+  final int num;
+  final Function increase;
+
+  const ABComponent(this.num, this.increase, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          Expanded(child: AComponent(num)),
+          Expanded(child: BComponent(increase)),
+        ],
+      ),
+    );
+  }
+}
+
 class AComponent extends StatelessWidget {
   final int num;
   const AComponent(this.num, {Key? key}) : super(key: key);
@@ -76,7 +77,6 @@ class AComponent extends StatelessWidget {
   }
 }
 
-// supplier 공급자 - 상태를 변경
 class BComponent extends StatelessWidget {
   final Function increase;
   const BComponent(this.increase, {Key? key}) : super(key: key);
@@ -101,6 +101,38 @@ class BComponent extends StatelessWidget {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class CComponent extends StatefulWidget {
+  const CComponent({Key? key}) : super(key: key);
+
+  @override
+  State<CComponent> createState() => _CComponentState();
+}
+
+class _CComponentState extends State<CComponent> {
+  int num = 1;
+  // 변수는 stateful한 위젯이 가지고 있어야함
+
+  void increase() {
+    setState(() {
+      // 값 변경하면서 build
+      num++;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.green,
+      body: Row(
+        children: [
+          Expanded(child: ABComponent(num, increase)),
+          Expanded(child: Align(child: Text("CComponent"))),
         ],
       ),
     );
