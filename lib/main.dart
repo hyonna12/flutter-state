@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final numProvider = Provider((_) => 2);
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    // 위젯에서 프로바이더를 사용하고 읽기 위해
+    // 앱 전체적으로 "ProviderScope" 위젯을 감싸줘야 합니다.
+    // 여기에 프로바이더의 상태가 저장됩니다.
+    ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -15,53 +25,36 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int num = 1;
-  // 변수는 stateful한 위젯이 가지고 있어야함
-
-  void increase() {
-    setState(() {
-      // 값 변경하면서 build
-      num++;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    double size = MediaQuery.of(context).size.width;
-    double screenSize = size * 0.8;
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(child: AComponent(num)),
-          Expanded(child: BComponent(increase)),
-          // rebuild 할 때 변하지 않는 값은 const(새롭게 그림그리지 않고 동일한 그림을 재사용) 붙여줌
+          Expanded(child: AComponent()),
+          Expanded(child: BComponent()),
         ],
       ),
     );
   }
 }
 
-// 컨슈머 (소비자) - 상태를 가지며 상태를 통해 그림을 그림
-class AComponent extends StatelessWidget {
-  final int num;
-  const AComponent(this.num, {Key? key}) : super(key: key);
+// StatelessWidget 대신에 Riverpod의 ConsumerWidget을 상속받아 사용합니다.
+class AComponent extends ConsumerWidget {
+  const AComponent({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    int num = ref.read(numProvider);
+
     return Container(
       color: Colors.yellow,
       child: Column(
         children: [
-          Text("AComponent"),
+          Text("ACompoent"),
           Expanded(
             child: Align(
               child: Text(
@@ -69,7 +62,7 @@ class AComponent extends StatelessWidget {
                 style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
               ),
             ),
-          ),
+          )
         ],
       ),
     );
@@ -78,8 +71,7 @@ class AComponent extends StatelessWidget {
 
 // supplier 공급자 - 상태를 변경
 class BComponent extends StatelessWidget {
-  final Function increase;
-  const BComponent(this.increase, {Key? key}) : super(key: key);
+  const BComponent({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -87,13 +79,11 @@ class BComponent extends StatelessWidget {
       color: Colors.blue,
       child: Column(
         children: [
-          Text("BComponent"),
+          Text("BCompoent"),
           Expanded(
             child: Align(
               child: ElevatedButton(
-                onPressed: () {
-                  increase();
-                },
+                onPressed: () {},
                 child: Text(
                   "숫자증가",
                   style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
