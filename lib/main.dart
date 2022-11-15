@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_state/pages/home_page.dart';
 
 final numProvider = Provider((_) => 2);
 
@@ -21,78 +22,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(child: AComponent()),
-          Expanded(child: BComponent()),
-        ],
-      ),
-    );
-  }
-}
-
-// StatelessWidget 대신에 Riverpod의 ConsumerWidget을 상속받아 사용합니다.
-class AComponent extends ConsumerWidget {
-  const AComponent({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    int num = ref.read(numProvider);
-
-    return Container(
-      color: Colors.yellow,
-      child: Column(
-        children: [
-          Text("ACompoent"),
-          Expanded(
-            child: Align(
-              child: Text(
-                "${num}",
-                style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-// supplier 공급자 - 상태를 변경
-class BComponent extends StatelessWidget {
-  const BComponent({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.blue,
-      child: Column(
-        children: [
-          Text("BCompoent"),
-          Expanded(
-            child: Align(
-              child: ElevatedButton(
-                onPressed: () {},
-                child: Text(
-                  "숫자증가",
-                  style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
